@@ -1,0 +1,19 @@
+{
+  "name": "personalsite",
+  "version": "1.0.0",
+  "description": "Shatayu Kulkarni's personal website",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Shatayu Kulkarni",
+  "license": "ISC",
+  "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.4",
+    "babel-preset-env": "^1.7.0",
+    "start-server-webpack-plugin": "^2.2.5",
+    "webpack": "^4.23.1",
+    "webpack-node-externals": "^1.7.2"
+  }
+}
