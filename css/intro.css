@@ -1,11 +1,11 @@
 #intro {
     background-color: #BFE6EF;
-    height: 40vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    height: 20vh;
+    display: relative;
+    text-align: center;
 }
 
 #text {
     font-size: 40px;
+    align-self: center;
 }

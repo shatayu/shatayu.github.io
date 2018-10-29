@@ -1,5 +1,21 @@
 #projects {
     background-color: #359D93;
-    height: 40vh;
-    display: relative;
+    padding: 30px;
+    text-align: center;
+}
+
+.projectContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.projectEntry {
+    flex: 1 1 0;
+
+    background-color: white;
+    width: 200px;
+    max-width: 70vw;
+
+    margin: 20px 20px;
 }

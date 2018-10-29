@@ -1,7 +1,7 @@
 #experience {
     background-color: #EEBD6B;
-    height: 40vh;
-    position: relative;
+    padding: 30px;
+    /* position: relative; */
 }
 
 .title {
@@ -12,12 +12,33 @@
 }
 
 .content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
+    text-align: center;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-flow: column;
+    flex-wrap: wrap;
+}
+
+.experienceEntry {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: nowrap;
+
+    width: 70vw;
+    background-color: white;
+    margin: 20px 20px;
+    align-self: center;
+    
+}
+
+.experienceEntry img {
+    width: 70px;
+    height: 70px;
+    border-radius: 15px;
+    display: inline-block;
+}
+
+.experienceTextContainer {
+    display: inline-block;
+    text-align: left;
+    margin-left: 20px;
 }
