@@ -1,8 +1,11 @@
 #intro {
     background-color: #BFE6EF;
     height: 20vh;
-    display: relative;
     text-align: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #text {
