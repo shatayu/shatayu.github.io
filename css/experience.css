@@ -1,0 +1,23 @@
+#experience {
+    background-color: #EEBD6B;
+    height: 40vh;
+    position: relative;
+}
+
+.title {
+    position: relative;
+    margin: 0 auto;
+    text-align: center;
+    display: block;
+}
+
+.content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
