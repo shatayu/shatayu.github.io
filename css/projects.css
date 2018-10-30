@@ -1,6 +1,9 @@
 #projects {
-    background-color: #359D93;
-    padding: 30px;
+    background-color: #F1F1F2;
+    padding: 10vh 0px;
+}
+
+.projectsContainer {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
@@ -9,15 +12,24 @@
 }
 
 .projectEntry {
+    position: relative;
     margin: 20px 20px;
     background-color: white;
     width: 40vw;
-
+    max-width: 400px;
     text-align: center;
 }
 
+.projectDescription {
+    margin-bottom: 50px;
+}
+
 .projectFooter {
-    margin-top: 15px;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    align-self: flex-end;
     color: #bbbbbb;
 }
 

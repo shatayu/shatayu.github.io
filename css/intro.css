@@ -1,6 +1,6 @@
 #intro {
-    background-color: #BFE6EF;
-    height: 20vh;
+    background-color: #A1D6E2;
+    height: 100vh;
     text-align: center;
 
     display: flex;
@@ -10,5 +10,6 @@
 
 #text {
     font-size: 40px;
+    font-weight: 600;
     align-self: center;
 }

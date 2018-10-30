@@ -9,6 +9,7 @@ body {
 .title {
     position: relative;
     margin: 0 auto;
+    margin-bottom: 5vh;
     text-align: center;
     display: block;
     font-size: 30px;
