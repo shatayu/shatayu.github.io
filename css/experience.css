@@ -52,5 +52,7 @@
 }
 
 #resumeDownload:hover {
+    transition: linear 0.1s;
     border: 3px solid #447695;
+    color: #447695;
 }
