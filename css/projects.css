@@ -12,4 +12,22 @@
     margin: 20px 20px;
     background-color: white;
     width: 40vw;
+
+    text-align: center;
+}
+
+.projectFooter {
+    margin-top: 15px;
+    color: #bbbbbb;
+}
+
+.projectFooter span {
+    margin: 0 10px;
+}
+
+.projectFooter span:hover {
+    color: #447695;
+    border-bottom: 1px solid #447695;
+
+    transition: 0.1s;
 }
