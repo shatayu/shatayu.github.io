@@ -1,39 +1,111 @@
-@import url('https://fonts.googleapis.com/css?family=KoHo:300,400,600');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;400;500&display=swap');
 
 body {
-    padding: 0px;
-    margin: 0px;
-    font-family: 'KoHo', sans-serif;
+    background-color: white;
+    color: #333;
+    font-family: 'Roboto Slab', serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
 }
 
-.title {
-    position: relative;
+.container {
+    max-width: 800px;
     margin: 0 auto;
-    margin-bottom: 5vh;
-    text-align: center;
-    display: block;
-    font-size: 30px;
-    font-weight: 600;
+    padding: 40px 20px;
 }
 
-.subtitle {
-    position: relative;
-    margin: 0 auto;
-    text-align: center;
-    display: block;
+section {
+    margin-bottom: 40px;
 }
 
-.name {
-    font-weight: 600;
+h1 {
+    font-size: 2.5em;
+    font-weight: 500;
+    margin: 0;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 1.5em;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 15px;
+}
+
+.subtle {
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.social {
+    margin-bottom: 40px;
+}
+
+.social a {
+    color: #666;
+    text-decoration: none;
+    margin-right: 15px;
+}
+
+.social a:hover {
+    text-decoration: underline;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    margin-bottom: 20px;
 }
 
 a {
+    color: #666;
     text-decoration: none;
-    color: #bbbbbb;
 }
 
 a:hover {
-    color: #447695;
+    text-decoration: underline;
+}
+
+.paper-title {
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 5px;
+}
+
+.paper-authors {
+    color: #666;
+    margin-bottom: 3px;
+}
+
+.paper-venue {
+    color: #666;
+    font-style: italic;
+    margin-bottom: 5px;
+}
+
+.paper-links {
+    margin-bottom: 5px;
+}
+
+.paper-note {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.project-title {
+    font-weight: 500;
+    color: #000;
+}
+
+#footer {
+    color: #666;
+    font-size: 0.9em;
+    margin-top: 60px;
 }
 
 /**

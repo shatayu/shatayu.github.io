@@ -23,206 +23,74 @@
     <link rel="stylesheet" type="text/css" media="screen" href="css/card.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="css/intro.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="css/experience.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/papers.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="css/projects.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="css/footer.css" />
 </head>
 
 <body>
-    <section id="intro">
-        <div id="text">
-            I'm Shatayu. Nice to meet you.
-        </div>
-    </section>
-    <section id="experience">
-        <div class="title">
-            Experiences I've learned from
-        </div>
-        <div class="content">
-            <div class="experienceEntry card">
-                <img src="./images/purdue.svg">
-                <div class="experienceTextContainer">
-                    <div class="name">
-                        PURDUE UNIVERSITY (WEST LAFAYETTE)
-                    </div>
-                    <div class="experienceBody">
-                        B.S. Computer Science (expected graduation May 2022)
-                    </div>
-                </div>
+    <div class="container">
+        <section id="intro">
+            <h1>Shatayu Kulkarni</h1>
+            <div class="social">
+                <a href="mailto:shatayukulkarni@gmail.com" target="_blank">Email</a>
+                <a href="https://www.linkedin.com/in/shatayu/" target="_blank">LinkedIn</a>
+                <a href="https://github.com/shatayu" target="_blank">GitHub</a>
             </div>
+        </section>
 
-            <div class="experienceEntry card">
-                <img src="./images/fireflies.jpg">
-                <div class="experienceTextContainer">
-                    <div class="name">
-                        Fireflies.ai (Feb. 2018 - present)
-                    </div>
-                    <div class="experienceBody">
-                        I make Chrome extensions which use natural language processing (with machine learning) to
-                        provide useful
-                        services. An example of work I do is TalkCRM (see projects).
-                    </div>
-                </div>
-            </div>
+        <section id="experience">
+            <h2>Experience</h2>
+            <ul>
+                <li>ML Engineer @ Meta (Facebook Dating)</li>
+                <li>Previously: SWE Intern @ Meta in 2020 and 2021 - worked on Ads Manager in 2020 and <a href="https://engineering.fb.com/2022/04/26/developer-tools/sql-notebooks/" target="_blank">Daiquery</a> (SQL Notebooks) in 2021</li>
+            </ul>
+        </section>
 
-            <div class="experienceEntry card">
-                <img src="./images/backpack.svg">
-                <div class="experienceTextContainer">
-                    <div class="name">
-                        CTO, Fluma Co. (2016-2018)
+        <section id="papers">
+            <h2>Papers</h2>
+            <ul>
+                <li>
+                    <div class="paper-title">Maximizing Cooperative Behavior in Collective Action Games Through a Reinforcement Learning Agent</div>
+                    <div class="paper-authors">Shatayu Kulkarni, Sabine Brunswicker</div>
+                    <div class="paper-links">
+                        [<a href="https://github.com/shatayu/rl-collective-action" target="_blank">code</a>]
+                        [<a href="https://drive.google.com/file/d/1R7Uz11fE7bRgOg6VWgVE3f_FLba9yoVV/view?usp=drive_link" target="_blank">poster</a>]
+                        [<a href="https://arxiv.org/abs/2409.09509" target="_blank">paper</a>]
                     </div>
-                    <div class="experienceBody">
-                        I did Android and system-level development for a startup I founded making smart backpacks. I
-                        have exhibited at Maker Faire, an annual tech festival.
+                    <div class="paper-note">presented at the 9th International Conference on Computational Social Science, Copenhagen</div>
+                </li>
+                <li>
+                    <div class="paper-title">Applying Competitive Policy Optimization to Pokémon Battling</div>
+                    <div class="paper-authors">Shatayu Kulkarni, Kamyar Azizzadenesheli</div>
+                    <div class="paper-venue">Undergraduate Honors Thesis, Purdue University, 2021</div>
+                    <div class="paper-links">
+                        [<a href="https://github.com/shatayu/copg/tree/master/pokemon" target="_blank">code</a>]
+                        [<a href="https://docs.google.com/presentation/d/1l9Zrf4sYTiGlSTIuM_hrsc3ZaR9RPzHjze9a93b5y4k/edit?usp=sharing" target="_blank">slides</a>]
+                        [<a href="Honors_Project.pdf" target="_blank">paper</a>]
                     </div>
-                </div>
-            </div>
+                </li>
+            </ul>
+        </section>
 
-            <div class="experienceEntry card">
-                <img src="./images/5776a.jpg">
-                <div class="experienceTextContainer">
-                    <div class="name">
-                        Team Captain, 5776A (member 2016-2017, captain 2017-2018)
-                    </div>
-                    <div class="experienceBody">
-                        I captained, built, and programmed (using sensors, control theory, and RobotC) for a VEX
-                        Robotics Competition team. World Championship qualifier in 2017 and 2018.
-                    </div>
-                </div>
-            </div>
+        <section id="projects">
+            <h2>Selected Projects</h2>
+            <ul>
+                <li>
+                    <span class="project-title">Melee LLM</span> - A question-answering system built using LLM and RAG technologies, trained on hundreds of scraped competitive Super Smash Bros. Melee lessons
+                    [<a href="https://github.com/shatayu/meleellm" target="_blank">code</a>]
+                </li>
+                <li>
+                    <span class="project-title">Hamster</span> - A personal productivity system for logging and analyzing life events using a Postgres database
+                    [<a href="https://github.com/James-C137/hamster" target="_blank">code</a>]
+                </li>
+            </ul>
+        </section>
 
-            <div class="experienceEntry card">
-                <img src="./images/impeccablesoftwares.png">
-                <div class="experienceTextContainer">
-                    <div class="name">
-                        Impeccable Softwares (Jul. 2016 - Aug. 2016)
-                    </div>
-                    <div class="experienceBody">
-                        I used HTML and CSS to design websites according to clients' needs. I also used the Facebook
-                        Graph API to analyze client feedback.
-                    </div>
-                </div>
-            </div>
-
+        <div id="footer">
+            last updated: March 15, 2025
         </div>
-        <div id="resumeDownloadContainer">
-            <div id="resumeDownload" onClick="window.open('./Resume.pdf', '_newtab')">
-                View my resume
-            </div>
-
-        </div>
-    </section>
-    <section id="projects">
-        <div class="title">
-            Things I've done
-        </div>
-        <div class="projectsContainer">
-            <div class="card projectEntry">
-                <div class="name">
-                    VEX Robotics Spacing Calculator
-                </div>
-                <div class="projectDescription">
-                    A web app that uses dynamic programming to calculate the best VEX Robotics spacers to use to fill
-                    in a gap of arbitrary distance. I made this project alone.
-                </div>
-                <div id="spacer" style="width: 200px; height: 50px;  display:inline-block"></div>
-                <div class="projectFooter">
-                    <span class="footerEntity projectCode">
-                        <a href="https://github.com/shatayu/SpacingCalcJS">CODE</a>
-                    </span>
-                    <span class="footerEntity projectLink">
-                        <a href="https://vex-spacing-calc.herokuapp.com./">LINK</a>
-                    </span>
-                </div>
-            </div>
-            <div class="card projectEntry">
-                <div class="name">
-                    TalkCRM
-                </div>
-                <div class="projectDescription">
-                    A Chrome extension which allows users to use natural language to enter data into a CRM. I made this
-                    project alone as part of my internship at Fireflies.ai.
-                </div>
-                <div id="spacer" style="width: 200px; height: 50px;  display:inline-block"></div>
-                <div class="projectFooter">
-                    <span class="footerEntity projectDemo">
-                        <a href="https://www.youtube.com/watch?v=qR6HGuigw1w">DEMO</a>
-                    </span>
-                    <span class="footerEntity projectCode">
-                        <a href="https://github.com/shatayu/TalkCRM">CODE</a>
-                    </span>
-                    <span class="footerEntity projectLink">
-                        <a href="https://chrome.google.com/webstore/detail/talkcrm/cbhmiepdakenpoafpgjeaondebmbkbjj/related">LINK</a>
-                    </span>
-                </div>
-            </div>
-            <div class="card projectEntry">
-                <div class="name">
-                    FoodByte
-                </div>
-                <div class="projectDescription">
-                    A web app that generates recipes which satisfy a wide variety of conditions (limited ingredients,
-                    calories, dietary restrictions, etc.) from natural language input. I implemented all of the
-                    functionality and various aspects of the UI.
-                </div>
-                <div class="projectFooter">
-                    <span class="footerEntity projectDemo">
-                        <a href="https://www.youtube.com/watch?v=DSZTWpAvGyI">DEMO</a>
-                    </span>
-                    <span class="footerEntity projectCode">
-                        <a href="https://github.com/shatayu/foodbyte-web">CODE</a>
-                    </span>
-                </div>
-            </div>
-            <div class="card projectEntry">
-                <div class="name">
-                    Atium
-                </div>
-                <div class="projectDescription">
-                    A Chrome extension that summarizes articles and provides related links for users. It also generates
-                    a notes sheet to help users quickly process information collected from many sources. I implemented
-                    all of the functionality and the popup UI.
-                </div>
-                <div id="spacer" style="width: 200px; height: 50px;  display:inline-block"></div>
-                <div class="projectFooter">
-                    <span class="footerEntity projectDemo">
-                        <a href="https://www.useloom.com/share/6efc548020f343369573eda647bb7c42">DEMO</a>
-                    </span>
-                    <span class="footerEntity projectCode">
-                        <a href="https://github.com/shatayu/Atium/tree/master">CODE</a>
-                    </span>
-                </div>
-            </div>
-            <div class="card projectEntry">
-                <div class="name">
-                    PokéPredict
-                </div>
-                <div class="projectDescription" id="pokepredict">
-                    A machine learning project I made alone which uses k-means clustering and an SVM to predict the
-                    winner of a
-                    Pokémon battle.
-                </div>
-                <!-- <div class="projectFooter">
-                    <span class="footerEntity projectDemo">
-                        DEMO
-                    </span>
-                    <span class="footerEntity projectCode">
-                        <a href="https://github.com/shatayu/SpacingCalcJS">CODE</a>
-                    </span>
-                    <span class="footerEntity projectLink">
-                        <a href="https://vex-spacing-calc.herokuapp.com./">LINK</a>
-                    </span>
-                </div> -->
-            </div>
-        </div>
-
-    </section>
-    <section id="footer">
-        <div id="imgcontainer">
-            <a href="https://github.com/shatayu"><img src="images/GitHub-Mark-120px-plus.png" /></a>
-            <a href="https://www.linkedin.com/in/shatayukulkarni/"><img src="images/In-Black-121px-TM.png" /></a>
-            <div id="footerText">Shatayu Kulkarni, 2018</div>
-        </div>
-    </section>
+    </div>
 </body>
 
 </html>
