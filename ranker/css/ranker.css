@@ -215,6 +215,13 @@ button:disabled {
 .ranking-item:hover {
     background: #f8f8f8;
     border-color: #e0e0e0;
+    cursor: pointer;
+}
+
+.ranking-item.selected {
+    background: #f0f8ff;
+    border-color: #4a90e2;
+    border-left-color: #4a90e2;
 }
 
 .rank-number {
@@ -298,6 +305,55 @@ button:disabled {
     }
 }
 
+/* Justification area styles */
+.justification-area {
+    margin: 30px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    min-height: 60px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.justification-prompt {
+    color: #666;
+    text-align: center;
+    font-style: italic;
+    padding: 10px 0;
+}
+
+.justification-header {
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.justification-step {
+    color: #555;
+    margin: 8px 0;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 5px;
+    border-left: 3px solid #4a90e2;
+    line-height: 1.4;
+}
+
+.justification-step strong {
+    color: #333;
+}
+
+.justification-error {
+    color: #dc3545;
+    text-align: center;
+    font-style: italic;
+    padding: 10px 0;
+}
+
 /* Additional styling for better visual hierarchy */
 @media (max-width: 480px) {
     .header-nav h1 {
@@ -311,5 +367,19 @@ button:disabled {
     .choice-button {
         font-size: 1.1rem;
         padding: 25px 30px;
+    }
+    
+    .justification-area {
+        margin: 20px 0;
+        padding: 15px;
+    }
+    
+    .justification-header {
+        font-size: 1rem;
+    }
+    
+    .justification-step {
+        font-size: 0.9rem;
+        padding: 6px 10px;
     }
 }
