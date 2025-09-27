@@ -428,8 +428,13 @@ function updateJustificationDisplay() {
                 `;
             });
             
+            // Sort selected items by ranking order for display
+            const sortedForDisplay = [...appState.selectedItems].sort((a, b) => 
+                appState.finalRanking.indexOf(a) - appState.finalRanking.indexOf(b)
+            );
+            
             justificationArea.innerHTML = `
-                <div class="justification-header">Why "${escapeHtml(appState.selectedItems[0])}" ranks higher than "${escapeHtml(appState.selectedItems[1])}":</div>
+                <div class="justification-header">Why "${escapeHtml(sortedForDisplay[0])}" ranks higher than "${escapeHtml(sortedForDisplay[1])}":</div>
                 ${pathHtml}
             `;
         } else {
