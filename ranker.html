@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranker - Shatayu Kulkarni</title>
+    <link rel="shortcut icon" type="image/x-icon" href="./images/Logo.png"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/ranker.css" />
+</head>
+<body>
+    <div class="container">
+        <!-- Header with back link -->
+        <div class="header-nav">
+            <a href="index.html" class="back-link">← Back to Main</a>
+            <h1>Ranker</h1>
+        </div>
+
+        <!-- Input Page -->
+        <div id="input-page" class="page active">
+            <div class="page-content">
+                <h2>Create Your Ranking</h2>
+                <p class="subtitle">Enter the items you want to rank, one per line:</p>
+                
+                <form id="input-form">
+                    <textarea 
+                        id="items-input" 
+                        placeholder="Apple&#10;Banana&#10;Orange&#10;Grape"
+                        rows="10"
+                    ></textarea>
+                    <button type="submit">Start Ranking</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Ranking Page -->
+        <div id="ranking-page" class="page">
+            <div class="page-content">
+                <div class="ranking-header">
+                    <h2>Which one belongs higher on the list?</h2>
+                </div>
+                
+                <div class="question-pair">
+                    <button id="choice-a" class="choice-button"></button>
+                    <div class="vs">VS</div>
+                    <button id="choice-b" class="choice-button"></button>
+                </div>
+
+                <div class="controls">
+                    <button id="back-btn" class="nav-button">← Back</button>
+                    <div id="progress" class="progress"></div>
+                    <button id="forward-btn" class="nav-button">Forward →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Page -->
+        <div id="results-page" class="page">
+            <div class="page-content">
+                <h2>Your Final Ranking</h2>
+                <div id="ranking-list" class="ranking-list"></div>
+                <button id="new-ranking-btn" class="new-ranking-button">Create New Ranking</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/ranker.js"></script>
+</body>
+</html>

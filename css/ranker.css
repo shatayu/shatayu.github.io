@@ -1,0 +1,315 @@
+/* Ranker-specific styles that complement the main site aesthetic */
+
+/* Header navigation */
+.header-nav {
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.back-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.header-nav h1 {
+    margin: 0;
+    font-size: 2em;
+    font-weight: 500;
+}
+
+/* Page management */
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.page-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Typography adjustments */
+.page-content h2 {
+    font-size: 1.8em;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+/* Input page styles */
+#items-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    color: #333;
+    font-size: 16px;
+    font-family: 'Roboto Slab', serif;
+    resize: vertical;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    min-height: 200px;
+}
+
+#items-input:focus {
+    outline: none;
+    border-color: #666;
+}
+
+#items-input::placeholder {
+    color: #999;
+}
+
+/* Button styles */
+button {
+    padding: 12px 24px;
+    background: #666;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Roboto Slab', serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled):not(.choice-button) {
+    background: #555;
+}
+
+button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Form styling */
+#input-form {
+    text-align: center;
+}
+
+/* Ranking page styles */
+.ranking-header h2 {
+    margin-bottom: 40px;
+    font-size: 1.5rem;
+}
+
+.question-pair {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.choice-button {
+    padding: 30px 40px;
+    background: white;
+    color: #333;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-family: 'Roboto Slab', serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 200px;
+    max-width: 280px;
+    word-wrap: break-word;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.choice-button:hover {
+    background: #f8f8f8;
+    border-color: #666;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.vs {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #999;
+    margin: 0 15px;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 40px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.nav-button {
+    padding: 10px 20px;
+    background: white;
+    color: #666;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.nav-button:hover:not(:disabled) {
+    background: #f8f8f8;
+    border-color: #666;
+}
+
+.nav-button:disabled {
+    background: #f5f5f5;
+    color: #ccc;
+    border-color: #eee;
+    cursor: not-allowed;
+}
+
+.progress {
+    color: #666;
+    font-size: 1rem;
+    text-align: center;
+    flex: 1;
+    margin: 0 20px;
+}
+
+/* Results page styles */
+.ranking-list {
+    margin-bottom: 40px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    margin: 10px 0;
+    background: white;
+    border: 2px solid #f0f0f0;
+    border-radius: 8px;
+    border-left: 4px solid #666;
+    transition: all 0.2s ease;
+}
+
+.ranking-item:hover {
+    background: #f8f8f8;
+    border-color: #e0e0e0;
+}
+
+.rank-number {
+    font-weight: 500;
+    font-size: 1.2rem;
+    color: #666;
+    margin-right: 20px;
+    min-width: 40px;
+    text-align: center;
+}
+
+.item-name {
+    font-size: 1.1rem;
+    text-align: left;
+    flex: 1;
+    color: #333;
+    line-height: 1.4;
+}
+
+.new-ranking-button {
+    display: block;
+    margin: 0 auto;
+    padding: 15px 30px;
+    background: #666;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.new-ranking-button:hover {
+    background: #555;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+    .header-nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .page-content {
+        padding: 0 10px;
+    }
+    
+    .question-pair {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .vs {
+        transform: rotate(90deg);
+        margin: 10px 0;
+    }
+    
+    .controls {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .progress {
+        margin: 0;
+        order: -1;
+    }
+    
+    .choice-button {
+        min-width: 250px;
+        max-width: 300px;
+    }
+    
+    .ranking-item {
+        padding: 12px 15px;
+    }
+    
+    .rank-number {
+        min-width: 35px;
+        margin-right: 15px;
+    }
+}
+
+/* Additional styling for better visual hierarchy */
+@media (max-width: 480px) {
+    .header-nav h1 {
+        font-size: 1.8em;
+    }
+    
+    .page-content h2 {
+        font-size: 1.5em;
+    }
+    
+    .choice-button {
+        font-size: 1.1rem;
+        padding: 25px 30px;
+    }
+}
