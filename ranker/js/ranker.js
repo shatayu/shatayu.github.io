@@ -556,6 +556,12 @@ function generateShareUrl(data) {
 }
 
 function shareRanking() {
+    const shareBtn = document.getElementById('share-btn');
+    
+    // Disable button and show checkmark
+    shareBtn.disabled = true;
+    shareBtn.classList.add('success');
+    
     const shareData = {
         items: appState.items,
         questionHistory: appState.questionHistory,
@@ -567,13 +573,19 @@ function shareRanking() {
     // Copy to clipboard
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(shareUrl).then(() => {
-            showShareFeedback('Link copied to clipboard!');
+            // Success handled by the visual feedback
         }).catch(() => {
             fallbackCopyToClipboard(shareUrl);
         });
     } else {
         fallbackCopyToClipboard(shareUrl);
     }
+    
+    // Re-enable button and hide checkmark after 3 seconds
+    setTimeout(() => {
+        shareBtn.disabled = false;
+        shareBtn.classList.remove('success');
+    }, 3000);
 }
 
 function fallbackCopyToClipboard(text) {
@@ -587,37 +599,15 @@ function fallbackCopyToClipboard(text) {
     
     try {
         document.execCommand('copy');
-        showShareFeedback('Link copied to clipboard!');
+        // Success is already handled by the visual feedback in shareRanking()
     } catch (err) {
-        showShareFeedback('Failed to copy link. Please copy manually: ' + text);
+        // On error, show an alert since the visual feedback won't be meaningful
+        alert('Failed to copy link. Please copy manually: ' + text);
     }
     
     document.body.removeChild(textArea);
 }
 
-function showShareFeedback(message) {
-    // Remove any existing feedback
-    const existingFeedback = document.querySelector('.share-feedback');
-    if (existingFeedback) {
-        existingFeedback.remove();
-    }
-    
-    // Create feedback element
-    const feedback = document.createElement('div');
-    feedback.className = 'share-feedback';
-    feedback.textContent = message;
-    
-    // Insert after share button
-    const shareBtn = document.getElementById('share-btn');
-    shareBtn.parentNode.insertBefore(feedback, shareBtn.nextSibling);
-    
-    // Remove feedback after 3 seconds
-    setTimeout(() => {
-        if (feedback && feedback.parentNode) {
-            feedback.remove();
-        }
-    }, 3000);
-}
 
 function loadSharedRanking() {
     const hash = window.location.hash.slice(1); // Remove #

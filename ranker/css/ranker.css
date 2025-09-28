@@ -203,15 +203,18 @@ button:disabled {
 .results-actions {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 15px;
     margin-bottom: 20px;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .share-button {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 12px 24px;
-    background: #4a90e2;
+    background: #666;
     color: white;
     border: none;
     border-radius: 8px;
@@ -219,29 +222,38 @@ button:disabled {
     font-family: 'Roboto Slab', serif;
     cursor: pointer;
     transition: all 0.2s ease;
+    min-width: 140px;
+    position: relative;
 }
 
-.share-button:hover {
-    background: #357abd;
+.share-button:hover:not(:disabled) {
+    background: #555;
     transform: translateY(-1px);
 }
 
-.share-feedback {
-    margin-top: 10px;
-    padding: 8px 16px;
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-    border-radius: 6px;
-    font-size: 14px;
-    text-align: center;
-    animation: fadeIn 0.3s ease;
+.share-button:disabled {
+    background: #999;
+    cursor: not-allowed;
+    transform: none;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+.share-button .checkmark {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
+
+.share-button.success .checkmark {
+    opacity: 1;
+}
+
+.share-button.success .share-text {
+    opacity: 0.8;
+}
+
 
 .ranking-item {
     display: flex;
@@ -285,20 +297,24 @@ button:disabled {
 }
 
 .new-ranking-button {
-    display: block;
-    margin: 0 auto;
-    padding: 15px 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
     background: #666;
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 16px;
+    font-family: 'Roboto Slab', serif;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
+    min-width: 140px;
 }
 
 .new-ranking-button:hover {
-    background: #555;
+    background: pink;
+    transform: translateY(-1px);
 }
 
 /* Mobile responsive */
@@ -357,6 +373,7 @@ button:disabled {
     .new-ranking-button {
         width: 100%;
         max-width: 280px;
+        justify-content: center;
     }
 }
 
