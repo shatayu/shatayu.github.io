@@ -25,9 +25,27 @@
                 <form id="input-form">
                     <textarea 
                         id="items-input" 
-                        placeholder="Apple&#10;Banana&#10;Orange&#10;Grape"
+                        placeholder="1. Apple&#10;1. Banana&#10;&#10;2. Orange&#10;2. Grape&#10;&#10;3. Pear"
                         rows="10"
                     ></textarea>
+                    
+                    <div class="tier-toggle-container">
+                        <label class="tier-toggle-label">
+                            <input type="checkbox" id="tier-parsing" checked>
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-text">Tier Parsing</span>
+                        </label>
+                        <div class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <div class="tooltip-content">
+                                If you add numbers before items in tiers, then it'll automatically rank everyone in one tier above everyone in all of the tiers below. For instance:<br><br>
+                                1. A<br>1. B<br>1. C<br><br>
+                                2. D<br>2. E<br>2. F<br><br>
+                                will cause everyone in tier 1 to be automatically ranked above everyone in tier 2
+                            </div>
+                        </div>
+                    </div>
+                    
                     <button type="submit">Start Ranking</button>
                 </form>
             </div>

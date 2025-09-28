@@ -13,8 +13,71 @@ let appState = {
     currentQuestionIndex: 0,
     currentQuestion: null,
     finalRanking: [],
-    selectedItems: []
+    selectedItems: [],
+    tiers: null,
+    tierItemMap: {} // Maps item -> tier number for quick lookup
 };
+
+// Tier parsing functionality
+function parseTiers(inputText, tierParsingEnabled) {
+    if (!tierParsingEnabled) {
+        return {
+            items: inputText
+                .split('\n')
+                .map(item => item.trim())
+                .filter(item => item.length > 0),
+            tiers: null
+        };
+    }
+    
+    const lines = inputText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    const tiers = {};
+    const items = [];
+    
+    // Regex patterns to match various tier formats
+    const tierPatterns = [
+        /^(\d+)\.\s*(.+)$/,      // 1. item
+        /^(\d+)\)\s*(.+)$/,      // 1) item  
+        /^(\d+)\.\)\s*(.+)$/,    // 1.) item
+        /^(\d+)\/\s*(.+)$/,      // 1/ item
+        /^(\d+)\s+(.+)$/,        // 1 item
+        /^\((\d+)\)\s*(.+)$/     // (1) item
+    ];
+    
+    lines.forEach(line => {
+        let matched = false;
+        
+        for (const pattern of tierPatterns) {
+            const match = line.match(pattern);
+            if (match) {
+                const tierNumber = parseInt(match[1], 10);
+                const itemName = match[2].trim();
+                
+                if (!tiers[tierNumber]) {
+                    tiers[tierNumber] = [];
+                }
+                tiers[tierNumber].push(itemName);
+                items.push(itemName);
+                matched = true;
+                break;
+            }
+        }
+        
+        // If no tier pattern matched, treat as regular item
+        if (!matched) {
+            items.push(line);
+        }
+    });
+    
+    // Only return tier data if we found actual tiers
+    const tierNumbers = Object.keys(tiers).map(n => parseInt(n, 10));
+    const hasTiers = tierNumbers.length > 0;
+    
+    return {
+        items,
+        tiers: hasTiers ? tiers : null
+    };
+}
 
 // Core ranking algorithms
 function generateEmptyGraph(items) {
@@ -25,6 +88,32 @@ function generateEmptyGraph(items) {
             graph[item1][item2] = COMPARISON_STATES.NOT_COMPARED;
         });
     });
+    return graph;
+}
+
+function generateTierGraph(items, tiers) {
+    let graph = generateEmptyGraph(items);
+    
+    if (!tiers) return graph;
+    
+    // Get sorted tier numbers
+    const tierNumbers = Object.keys(tiers).map(n => parseInt(n, 10)).sort((a, b) => a - b);
+    
+    // For each tier, make all items in lower-numbered tiers better than all items in higher-numbered tiers
+    for (let i = 0; i < tierNumbers.length; i++) {
+        for (let j = i + 1; j < tierNumbers.length; j++) {
+            const higherTier = tiers[tierNumbers[i]];
+            const lowerTier = tiers[tierNumbers[j]];
+            
+            // Every item in higher tier beats every item in lower tier
+            higherTier.forEach(higherItem => {
+                lowerTier.forEach(lowerItem => {
+                    graph = updateComparisonGraph(graph, higherItem, lowerItem);
+                });
+            });
+        }
+    }
+    
     return graph;
 }
 
@@ -173,6 +262,13 @@ function getQuestionNumber(questionsAsked, a, b) {
     return questionIndex + 1;
 }
 
+function isTierComparison(item1, item2) {
+    if (!appState.tiers || !appState.tierItemMap[item1] || !appState.tierItemMap[item2]) {
+        return false;
+    }
+    return appState.tierItemMap[item1] !== appState.tierItemMap[item2];
+}
+
 function getJustificationPath(selections, finalRanking, comparisonGraph, questionHistory) {
     if (selections.length !== 2) return null;
     
@@ -180,6 +276,22 @@ function getJustificationPath(selections, finalRanking, comparisonGraph, questio
     const sortedSelections = [...selections].sort((a, b) => 
         finalRanking.indexOf(a) - finalRanking.indexOf(b)
     );
+    
+    // Check if this is a direct tier comparison
+    if (isTierComparison(sortedSelections[0], sortedSelections[1])) {
+        const higherItem = sortedSelections[0];
+        const lowerItem = sortedSelections[1];
+        const higherTier = appState.tierItemMap[higherItem];
+        const lowerTier = appState.tierItemMap[lowerItem];
+        
+        return [{
+            better: higherItem,
+            worse: lowerItem,
+            tierComparison: true,
+            higherTier: higherTier,
+            lowerTier: lowerTier
+        }];
+    }
     
     const path = shortestPath(comparisonGraph, sortedSelections[0], sortedSelections[1]);
     
@@ -189,14 +301,29 @@ function getJustificationPath(selections, finalRanking, comparisonGraph, questio
             const current = path[i];
             const next = path[i + 1];
             
-            const questionNumber = getQuestionNumber(questionHistory, current, next);
-            
-            if (questionNumber !== -1) {
+            // Check if this step is a tier comparison
+            if (isTierComparison(current, next)) {
+                const higherTier = appState.tierItemMap[current];
+                const lowerTier = appState.tierItemMap[next];
+                
                 pathArray.push({
                     better: current,
                     worse: next,
-                    questionNumber: questionNumber
+                    tierComparison: true,
+                    higherTier: higherTier,
+                    lowerTier: lowerTier
                 });
+            } else {
+                const questionNumber = getQuestionNumber(questionHistory, current, next);
+                
+                if (questionNumber !== -1) {
+                    pathArray.push({
+                        better: current,
+                        worse: next,
+                        questionNumber: questionNumber,
+                        tierComparison: false
+                    });
+                }
             }
         }
         return pathArray;
@@ -217,30 +344,60 @@ function showPage(pageId) {
 function initializeInputPage() {
     const form = document.getElementById('input-form');
     const textarea = document.getElementById('items-input');
+    const tierParsingCheckbox = document.getElementById('tier-parsing');
     
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         const inputText = textarea.value.trim();
-        const items = inputText
-            .split('\n')
-            .map(item => item.trim())
-            .filter(item => item.length > 0);
+        const tierParsingEnabled = tierParsingCheckbox.checked;
         
-        if (items.length < 2) {
+        const parsed = parseTiers(inputText, tierParsingEnabled);
+        
+        if (parsed.items.length < 2) {
             alert('Please enter at least 2 items to rank');
             return;
         }
         
-        startRanking(items);
+        startRanking(parsed.items, parsed.tiers);
     });
 }
 
 // Ranking page logic
-function startRanking(items) {
+function startRanking(items, tiers = null) {
     appState.items = items;
-    appState.comparisonGraph = generateEmptyGraph(items);
+    appState.tiers = tiers;
+    appState.tierItemMap = {};
+    appState.comparisonGraph = tiers ? generateTierGraph(items, tiers) : generateEmptyGraph(items);
     appState.questionHistory = [];
     appState.currentQuestionIndex = 0;
+    
+    // Build tier item map for quick lookup
+    if (tiers) {
+        Object.keys(tiers).forEach(tierNumber => {
+            const tierNum = parseInt(tierNumber, 10);
+            tiers[tierNumber].forEach(item => {
+                appState.tierItemMap[item] = tierNum;
+            });
+        });
+        
+        const tierNumbers = Object.keys(tiers).map(n => parseInt(n, 10)).sort((a, b) => a - b);
+        
+        for (let i = 0; i < tierNumbers.length; i++) {
+            for (let j = i + 1; j < tierNumbers.length; j++) {
+                const higherTier = tiers[tierNumbers[i]];
+                const lowerTier = tiers[tierNumbers[j]];
+                
+                // Add all tier comparisons to history
+                higherTier.forEach(higherItem => {
+                    lowerTier.forEach(lowerItem => {
+                        appState.questionHistory.push([higherItem, lowerItem]);
+                    });
+                });
+            }
+        }
+        
+        appState.currentQuestionIndex = appState.questionHistory.length;
+    }
     
     showPage('ranking-page');
     updateRankingPage();
@@ -421,11 +578,19 @@ function updateJustificationDisplay() {
         if (path && path.length > 0) {
             let pathHtml = '';
             path.forEach(step => {
-                pathHtml += `
-                    <div class="justification-step">
-                        (Q${step.questionNumber}) You said <strong>${escapeHtml(step.better)}</strong> is better than <strong>${escapeHtml(step.worse)}</strong>
-                    </div>
-                `;
+                if (step.tierComparison) {
+                    pathHtml += `
+                        <div class="justification-step tier-step">
+                            <strong>${escapeHtml(step.better)}</strong> is in tier ${step.higherTier} while <strong>${escapeHtml(step.worse)}</strong> is in tier ${step.lowerTier}
+                        </div>
+                    `;
+                } else {
+                    pathHtml += `
+                        <div class="justification-step question-step">
+                            (Q${step.questionNumber}) You said <strong>${escapeHtml(step.better)}</strong> is better than <strong>${escapeHtml(step.worse)}</strong>
+                        </div>
+                    `;
+                }
             });
             
             // Sort selected items by ranking order for display
@@ -460,7 +625,9 @@ function initializeResultsPage() {
             currentQuestionIndex: 0,
             currentQuestion: null,
             finalRanking: [],
-            selectedItems: []
+            selectedItems: [],
+            tiers: null,
+            tierItemMap: {}
         };
         
         // Clear input
@@ -483,6 +650,7 @@ function escapeHtml(text) {
 function encodeString(data) {
     const items = data.items;
     const history = data.questionHistory;
+    const tiers = data.tiers;
     
     // Use item indices instead of full strings (massive space saving)
     const itemMap = {};
@@ -494,11 +662,20 @@ function encodeString(data) {
         itemMap[worse]
     ]);
     
-    // Create ultra-minimal structure: just items and compressed history
-    // The ranking can be reconstructed from the history
+    // Encode tiers using indices if present
+    let compressedTiers = null;
+    if (tiers) {
+        compressedTiers = {};
+        Object.keys(tiers).forEach(tierNumber => {
+            compressedTiers[tierNumber] = tiers[tierNumber].map(item => itemMap[item]);
+        });
+    }
+    
+    // Create ultra-minimal structure: items, compressed history, and tiers
     const compressed = [
         items,
-        compressedHistory
+        compressedHistory,
+        compressedTiers
     ];
     
     // Use shorter JSON with minimal whitespace, then base64
@@ -522,7 +699,7 @@ function decodeString(encodedData) {
         }
         
         const jsonString = decodeURIComponent(escape(atob(base64)));
-        const [items, compressedHistory] = JSON.parse(jsonString);
+        const [items, compressedHistory, compressedTiers] = JSON.parse(jsonString);
         
         // Reconstruct full history from indices
         const history = compressedHistory.map(([betterIdx, worseIdx]) => [
@@ -530,8 +707,17 @@ function decodeString(encodedData) {
             items[worseIdx]
         ]);
         
+        // Reconstruct tiers from indices if present
+        let tiers = null;
+        if (compressedTiers) {
+            tiers = {};
+            Object.keys(compressedTiers).forEach(tierNumber => {
+                tiers[tierNumber] = compressedTiers[tierNumber].map(itemIdx => items[itemIdx]);
+            });
+        }
+        
         // Reconstruct ranking by replaying the history
-        let comparisonGraph = generateEmptyGraph(items);
+        let comparisonGraph = tiers ? generateTierGraph(items, tiers) : generateEmptyGraph(items);
         history.forEach(([better, worse]) => {
             comparisonGraph = updateComparisonGraph(comparisonGraph, better, worse);
         });
@@ -542,7 +728,8 @@ function decodeString(encodedData) {
         return {
             items,
             history,
-            ranking
+            ranking,
+            tiers
         };
     } catch (error) {
         console.error('Failed to decode share data:', error);
@@ -565,7 +752,8 @@ function shareRanking() {
     const shareData = {
         items: appState.items,
         questionHistory: appState.questionHistory,
-        finalRanking: appState.finalRanking
+        finalRanking: appState.finalRanking,
+        tiers: appState.tiers
     };
     
     const shareUrl = generateShareUrl(shareData);
@@ -625,9 +813,23 @@ function loadSharedRanking() {
     appState.finalRanking = decodedData.ranking;
     appState.currentQuestionIndex = decodedData.history.length;
     appState.selectedItems = [];
+    appState.tiers = decodedData.tiers;
+    appState.tierItemMap = {};
+    
+    // Build tier item map if tiers exist
+    if (decodedData.tiers) {
+        Object.keys(decodedData.tiers).forEach(tierNumber => {
+            const tierNum = parseInt(tierNumber, 10);
+            decodedData.tiers[tierNumber].forEach(item => {
+                appState.tierItemMap[item] = tierNum;
+            });
+        });
+    }
     
     // Rebuild comparison graph from history
-    appState.comparisonGraph = generateEmptyGraph(decodedData.items);
+    appState.comparisonGraph = decodedData.tiers ? 
+        generateTierGraph(decodedData.items, decodedData.tiers) : 
+        generateEmptyGraph(decodedData.items);
     decodedData.history.forEach(([better, worse]) => {
         appState.comparisonGraph = updateComparisonGraph(appState.comparisonGraph, better, worse);
     });
