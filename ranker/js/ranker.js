@@ -393,9 +393,9 @@ function updateJustificationDisplay() {
         
         const resultsPage = document.getElementById('results-page');
         const pageContent = resultsPage.querySelector('.page-content');
-        const newRankingBtn = document.getElementById('new-ranking-btn');
+        const resultsActions = document.querySelector('.results-actions');
         
-        pageContent.insertBefore(justificationArea, newRankingBtn);
+        pageContent.insertBefore(justificationArea, resultsActions);
     }
     
     if (appState.selectedItems.length === 0) {
@@ -449,6 +449,7 @@ function updateJustificationDisplay() {
 
 function initializeResultsPage() {
     const newRankingBtn = document.getElementById('new-ranking-btn');
+    const shareBtn = document.getElementById('share-btn');
     
     newRankingBtn.addEventListener('click', () => {
         // Reset state
@@ -467,6 +468,8 @@ function initializeResultsPage() {
         
         showPage('input-page');
     });
+    
+    shareBtn.addEventListener('click', shareRanking);
 }
 
 // Utility function to escape HTML
@@ -476,12 +479,183 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// Share ranking functionality - Ultra compressed encoding
+function encodeString(data) {
+    const items = data.items;
+    const history = data.questionHistory;
+    
+    // Use item indices instead of full strings (massive space saving)
+    const itemMap = {};
+    items.forEach((item, index) => itemMap[item] = index);
+    
+    // Encode history as pairs of indices instead of full strings
+    const compressedHistory = history.map(([better, worse]) => [
+        itemMap[better], 
+        itemMap[worse]
+    ]);
+    
+    // Create ultra-minimal structure: just items and compressed history
+    // The ranking can be reconstructed from the history
+    const compressed = [
+        items,
+        compressedHistory
+    ];
+    
+    // Use shorter JSON with minimal whitespace, then base64
+    const jsonString = JSON.stringify(compressed).replace(/\s/g, '');
+    return btoa(unescape(encodeURIComponent(jsonString)))
+        .replace(/\+/g, '-')  // URL-safe base64
+        .replace(/\//g, '_')
+        .replace(/=/g, '');   // Remove padding
+}
+
+function decodeString(encodedData) {
+    try {
+        // Restore URL-safe base64 and add padding if needed
+        let base64 = encodedData
+            .replace(/-/g, '+')
+            .replace(/_/g, '/');
+        
+        // Add padding
+        while (base64.length % 4) {
+            base64 += '=';
+        }
+        
+        const jsonString = decodeURIComponent(escape(atob(base64)));
+        const [items, compressedHistory] = JSON.parse(jsonString);
+        
+        // Reconstruct full history from indices
+        const history = compressedHistory.map(([betterIdx, worseIdx]) => [
+            items[betterIdx],
+            items[worseIdx]
+        ]);
+        
+        // Reconstruct ranking by replaying the history
+        let comparisonGraph = generateEmptyGraph(items);
+        history.forEach(([better, worse]) => {
+            comparisonGraph = updateComparisonGraph(comparisonGraph, better, worse);
+        });
+        
+        const result = getNextQuestion(items, comparisonGraph);
+        const ranking = result.array;
+        
+        return {
+            items,
+            history,
+            ranking
+        };
+    } catch (error) {
+        console.error('Failed to decode share data:', error);
+        return null;
+    }
+}
+
+function generateShareUrl(data) {
+    const encoded = encodeString(data);
+    return `${window.location.origin}${window.location.pathname}#${encoded}`;
+}
+
+function shareRanking() {
+    const shareData = {
+        items: appState.items,
+        questionHistory: appState.questionHistory,
+        finalRanking: appState.finalRanking
+    };
+    
+    const shareUrl = generateShareUrl(shareData);
+    
+    // Copy to clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            showShareFeedback('Link copied to clipboard!');
+        }).catch(() => {
+            fallbackCopyToClipboard(shareUrl);
+        });
+    } else {
+        fallbackCopyToClipboard(shareUrl);
+    }
+}
+
+function fallbackCopyToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showShareFeedback('Link copied to clipboard!');
+    } catch (err) {
+        showShareFeedback('Failed to copy link. Please copy manually: ' + text);
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+function showShareFeedback(message) {
+    // Remove any existing feedback
+    const existingFeedback = document.querySelector('.share-feedback');
+    if (existingFeedback) {
+        existingFeedback.remove();
+    }
+    
+    // Create feedback element
+    const feedback = document.createElement('div');
+    feedback.className = 'share-feedback';
+    feedback.textContent = message;
+    
+    // Insert after share button
+    const shareBtn = document.getElementById('share-btn');
+    shareBtn.parentNode.insertBefore(feedback, shareBtn.nextSibling);
+    
+    // Remove feedback after 3 seconds
+    setTimeout(() => {
+        if (feedback && feedback.parentNode) {
+            feedback.remove();
+        }
+    }, 3000);
+}
+
+function loadSharedRanking() {
+    const hash = window.location.hash.slice(1); // Remove #
+    if (!hash) return false;
+    
+    const decodedData = decodeString(hash);
+    if (!decodedData || !decodedData.items || !decodedData.history || !decodedData.ranking) {
+        console.error('Invalid share data');
+        return false;
+    }
+    
+    // Restore the app state
+    appState.items = decodedData.items;
+    appState.questionHistory = decodedData.history;
+    appState.finalRanking = decodedData.ranking;
+    appState.currentQuestionIndex = decodedData.history.length;
+    appState.selectedItems = [];
+    
+    // Rebuild comparison graph from history
+    appState.comparisonGraph = generateEmptyGraph(decodedData.items);
+    decodedData.history.forEach(([better, worse]) => {
+        appState.comparisonGraph = updateComparisonGraph(appState.comparisonGraph, better, worse);
+    });
+    
+    // Show results directly
+    showResults();
+    return true;
+}
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
     initializeInputPage();
     initializeRankingPage();
     initializeResultsPage();
     
-    // Start with input page
-    showPage('input-page');
+    // Check if there's a shared ranking in the URL
+    if (!loadSharedRanking()) {
+        // No shared ranking, start with input page
+        showPage('input-page');
+    }
 });
