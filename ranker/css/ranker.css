@@ -68,6 +68,7 @@
     margin-bottom: 20px;
     line-height: 1.5;
     min-height: 200px;
+    box-sizing: border-box;
 }
 
 #items-input:focus {
@@ -447,7 +448,18 @@ button:disabled {
     }
     
     .page-content {
-        padding: 0 10px;
+        padding: 0 20px;
+    }
+    
+    #input-form {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    #items-input {
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0 auto;
     }
     
     .question-pair {
@@ -456,7 +468,6 @@ button:disabled {
     }
     
     .vs {
-        transform: rotate(90deg);
         margin: 10px 0;
     }
     
