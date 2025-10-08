@@ -15,7 +15,8 @@ let appState = {
     finalRanking: [],
     selectedItems: [],
     tiers: null,
-    tierItemMap: {} // Maps item -> tier number for quick lookup
+    tierItemMap: {}, // Maps item -> tier number for quick lookup
+    userQuestionsAsked: 0 // Track only user-answered questions, not tier comparisons
 };
 
 // Tier parsing functionality
@@ -370,6 +371,7 @@ function startRanking(items, tiers = null) {
     appState.comparisonGraph = tiers ? generateTierGraph(items, tiers) : generateEmptyGraph(items);
     appState.questionHistory = [];
     appState.currentQuestionIndex = 0;
+    appState.userQuestionsAsked = 0;
     
     // Build tier item map for quick lookup
     if (tiers) {
@@ -436,6 +438,9 @@ function handleChoice(better, worse) {
     appState.questionHistory = newHistory;
     appState.currentQuestionIndex = newHistory.length;
     
+    // Increment user questions counter
+    appState.userQuestionsAsked++;
+    
     updateRankingPage();
 }
 
@@ -445,9 +450,9 @@ function updateProgress() {
     const forwardBtn = document.getElementById('forward-btn');
     
     const totalQuestions = estimateQuestionsRemaining(appState.items);
-    const questionsAsked = appState.currentQuestionIndex;
+    const currentQuestionNumber = appState.userQuestionsAsked + 1; // +1 because we're showing the current question
     
-    progress.textContent = `Question ${questionsAsked + 1} of up to ${totalQuestions}`;
+    progress.textContent = `Question ${currentQuestionNumber} of up to ${totalQuestions}`;
     
     // Update button states
     backBtn.disabled = false; // Always allow going back
@@ -464,8 +469,13 @@ function initializeRankingPage() {
             const newIndex = appState.currentQuestionIndex - 1;
             appState.currentQuestionIndex = newIndex;
             
+            // Decrement user questions counter if we're going back from a user question
+            if (appState.userQuestionsAsked > 0) {
+                appState.userQuestionsAsked--;
+            }
+            
             // Rebuild graph from history up to newIndex
-            let newGraph = generateEmptyGraph(appState.items);
+            let newGraph = appState.tiers ? generateTierGraph(appState.items, appState.tiers) : generateEmptyGraph(appState.items);
             for (let i = 0; i < newIndex; i++) {
                 const [better, worse] = appState.questionHistory[i];
                 newGraph = updateComparisonGraph(newGraph, better, worse);
@@ -480,7 +490,10 @@ function initializeRankingPage() {
     forwardBtn.addEventListener('click', () => {
         if (appState.currentQuestionIndex < appState.questionHistory.length) {
             const [better, worse] = appState.questionHistory[appState.currentQuestionIndex];
-            handleChoice(better, worse);
+            appState.comparisonGraph = updateComparisonGraph(appState.comparisonGraph, better, worse);
+            appState.currentQuestionIndex++;
+            appState.userQuestionsAsked++;
+            updateRankingPage();
         }
     });
 }
@@ -627,7 +640,8 @@ function initializeResultsPage() {
             finalRanking: [],
             selectedItems: [],
             tiers: null,
-            tierItemMap: {}
+            tierItemMap: {},
+            userQuestionsAsked: 0
         };
         
         // Clear input
@@ -646,101 +660,7 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Share ranking functionality - Ultra compressed encoding
-function encodeString(data) {
-    const items = data.items;
-    const history = data.questionHistory;
-    const tiers = data.tiers;
-    
-    // Use item indices instead of full strings (massive space saving)
-    const itemMap = {};
-    items.forEach((item, index) => itemMap[item] = index);
-    
-    // Encode history as pairs of indices instead of full strings
-    const compressedHistory = history.map(([better, worse]) => [
-        itemMap[better], 
-        itemMap[worse]
-    ]);
-    
-    // Encode tiers using indices if present
-    let compressedTiers = null;
-    if (tiers) {
-        compressedTiers = {};
-        Object.keys(tiers).forEach(tierNumber => {
-            compressedTiers[tierNumber] = tiers[tierNumber].map(item => itemMap[item]);
-        });
-    }
-    
-    // Create ultra-minimal structure: items, compressed history, and tiers
-    const compressed = [
-        items,
-        compressedHistory,
-        compressedTiers
-    ];
-    
-    // Use shorter JSON with minimal whitespace, then base64
-    const jsonString = JSON.stringify(compressed).replace(/\s/g, '');
-    return btoa(unescape(encodeURIComponent(jsonString)))
-        .replace(/\+/g, '-')  // URL-safe base64
-        .replace(/\//g, '_')
-        .replace(/=/g, '');   // Remove padding
-}
-
-function decodeString(encodedData) {
-    try {
-        // Restore URL-safe base64 and add padding if needed
-        let base64 = encodedData
-            .replace(/-/g, '+')
-            .replace(/_/g, '/');
-        
-        // Add padding
-        while (base64.length % 4) {
-            base64 += '=';
-        }
-        
-        const jsonString = decodeURIComponent(escape(atob(base64)));
-        const [items, compressedHistory, compressedTiers] = JSON.parse(jsonString);
-        
-        // Reconstruct full history from indices
-        const history = compressedHistory.map(([betterIdx, worseIdx]) => [
-            items[betterIdx],
-            items[worseIdx]
-        ]);
-        
-        // Reconstruct tiers from indices if present
-        let tiers = null;
-        if (compressedTiers) {
-            tiers = {};
-            Object.keys(compressedTiers).forEach(tierNumber => {
-                tiers[tierNumber] = compressedTiers[tierNumber].map(itemIdx => items[itemIdx]);
-            });
-        }
-        
-        // Reconstruct ranking by replaying the history
-        let comparisonGraph = tiers ? generateTierGraph(items, tiers) : generateEmptyGraph(items);
-        history.forEach(([better, worse]) => {
-            comparisonGraph = updateComparisonGraph(comparisonGraph, better, worse);
-        });
-        
-        const result = getNextQuestion(items, comparisonGraph);
-        const ranking = result.array;
-        
-        return {
-            items,
-            history,
-            ranking,
-            tiers
-        };
-    } catch (error) {
-        console.error('Failed to decode share data:', error);
-        return null;
-    }
-}
-
-function generateShareUrl(data) {
-    const encoded = encodeString(data);
-    return `${window.location.origin}${window.location.pathname}#${encoded}`;
-}
+// Share ranking functionality - Copy to clipboard
 
 function shareRanking() {
     const shareBtn = document.getElementById('share-btn');
@@ -749,24 +669,20 @@ function shareRanking() {
     shareBtn.disabled = true;
     shareBtn.classList.add('success');
     
-    const shareData = {
-        items: appState.items,
-        questionHistory: appState.questionHistory,
-        finalRanking: appState.finalRanking,
-        tiers: appState.tiers
-    };
-    
-    const shareUrl = generateShareUrl(shareData);
+    // Format ranking as numbered list
+    const rankingText = appState.finalRanking
+        .map((item, index) => `${index + 1}. ${item}`)
+        .join('\n');
     
     // Copy to clipboard
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(shareUrl).then(() => {
+        navigator.clipboard.writeText(rankingText).then(() => {
             // Success handled by the visual feedback
         }).catch(() => {
-            fallbackCopyToClipboard(shareUrl);
+            fallbackCopyToClipboard(rankingText);
         });
     } else {
-        fallbackCopyToClipboard(shareUrl);
+        fallbackCopyToClipboard(rankingText);
     }
     
     // Re-enable button and hide checkmark after 3 seconds
@@ -790,53 +706,10 @@ function fallbackCopyToClipboard(text) {
         // Success is already handled by the visual feedback in shareRanking()
     } catch (err) {
         // On error, show an alert since the visual feedback won't be meaningful
-        alert('Failed to copy link. Please copy manually: ' + text);
+        alert('Failed to copy ranking. Please copy manually: ' + text);
     }
     
     document.body.removeChild(textArea);
-}
-
-
-function loadSharedRanking() {
-    const hash = window.location.hash.slice(1); // Remove #
-    if (!hash) return false;
-    
-    const decodedData = decodeString(hash);
-    if (!decodedData || !decodedData.items || !decodedData.history || !decodedData.ranking) {
-        console.error('Invalid share data');
-        return false;
-    }
-    
-    // Restore the app state
-    appState.items = decodedData.items;
-    appState.questionHistory = decodedData.history;
-    appState.finalRanking = decodedData.ranking;
-    appState.currentQuestionIndex = decodedData.history.length;
-    appState.selectedItems = [];
-    appState.tiers = decodedData.tiers;
-    appState.tierItemMap = {};
-    
-    // Build tier item map if tiers exist
-    if (decodedData.tiers) {
-        Object.keys(decodedData.tiers).forEach(tierNumber => {
-            const tierNum = parseInt(tierNumber, 10);
-            decodedData.tiers[tierNumber].forEach(item => {
-                appState.tierItemMap[item] = tierNum;
-            });
-        });
-    }
-    
-    // Rebuild comparison graph from history
-    appState.comparisonGraph = decodedData.tiers ? 
-        generateTierGraph(decodedData.items, decodedData.tiers) : 
-        generateEmptyGraph(decodedData.items);
-    decodedData.history.forEach(([better, worse]) => {
-        appState.comparisonGraph = updateComparisonGraph(appState.comparisonGraph, better, worse);
-    });
-    
-    // Show results directly
-    showResults();
-    return true;
 }
 
 // Initialize the application
@@ -845,9 +718,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeRankingPage();
     initializeResultsPage();
     
-    // Check if there's a shared ranking in the URL
-    if (!loadSharedRanking()) {
-        // No shared ranking, start with input page
-        showPage('input-page');
-    }
+    // Start with input page
+    showPage('input-page');
 });
