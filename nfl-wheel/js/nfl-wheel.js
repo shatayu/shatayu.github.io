@@ -368,6 +368,10 @@
         drawWheel();
         updateProgress();
 
+        if (window.innerWidth <= 900) {
+            document.querySelector('.wheel-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
         if (Object.keys(filledPositions).length >= POSITIONS.length) {
             setTimeout(showResults, 600);
         } else {
@@ -395,6 +399,22 @@
         const order = seededOrder || teamOrder;
         const hash = encodeHash(order);
         return window.location.origin + window.location.pathname + '#' + hash;
+    }
+
+    function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            return navigator.clipboard.writeText(text);
+        }
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        return Promise.resolve();
     }
 
     function flashCopied(btn) {
@@ -446,7 +466,7 @@
     });
 
     copyLinkBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(buildShareUrl()).then(() => flashCopied(copyLinkBtn));
+        copyToClipboard(buildShareUrl()).then(() => flashCopied(copyLinkBtn));
     });
 
     init();

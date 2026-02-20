@@ -187,6 +187,8 @@
 
 .modal-overlay.active {
     display: flex;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 @keyframes fadeIn {
@@ -203,6 +205,8 @@
     overflow: hidden;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.3s ease;
+    margin: auto;
+    flex-shrink: 0;
 }
 
 @keyframes slideUp {
@@ -454,5 +458,23 @@
         padding: 8px 14px;
         font-size: 0.9rem;
         min-width: 60px;
+    }
+
+    .modal-overlay {
+        padding: 20px 0;
+    }
+
+    .modal-content {
+        margin: auto;
+    }
+
+    .results-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .share-btn {
+        width: 100%;
+        max-width: 280px;
     }
 }
