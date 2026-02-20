@@ -371,6 +371,37 @@
     font-size: 0.85rem;
 }
 
+.results-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.share-btn {
+    padding: 10px 20px;
+    background: #666;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Roboto Slab', serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 140px;
+}
+
+.share-btn:hover {
+    background: #555;
+    transform: translateY(-1px);
+}
+
+.share-btn.copied {
+    background: #4a9;
+    pointer-events: none;
+}
+
 .results-content .spin-button {
     display: block;
     margin: 0 auto;

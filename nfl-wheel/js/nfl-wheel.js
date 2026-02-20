@@ -38,6 +38,35 @@
 
     const POSITIONS = ['QB', 'RB', 'WR', 'TE', 'Defense', 'Coach'];
 
+    const XOR_KEY = [0xA3, 0x7F, 0x1B, 0xE5, 0x42, 0xD9];
+    const SHUFFLE = [4, 11, 2, 9, 0, 7, 6, 1, 10, 3, 8, 5];
+    const UNSHUFFLE = new Array(12);
+    SHUFFLE.forEach((dest, src) => { UNSHUFFLE[dest] = src; });
+
+    function encodeHash(teamIndices) {
+        const xored = teamIndices.map((idx, i) => (idx ^ XOR_KEY[i]) & 0xFF);
+        const hex = xored.map(b => b.toString(16).padStart(2, '0')).join('');
+        const shuffled = new Array(12);
+        for (let i = 0; i < 12; i++) shuffled[SHUFFLE[i]] = hex[i];
+        return shuffled.join('');
+    }
+
+    function decodeHash(hash) {
+        if (!/^[0-9a-f]{12}$/.test(hash)) return null;
+        const unshuffled = new Array(12);
+        for (let i = 0; i < 12; i++) unshuffled[UNSHUFFLE[i]] = hash[i];
+        const hex = unshuffled.join('');
+        const indices = [];
+        for (let i = 0; i < 6; i++) {
+            const raw = parseInt(hex.slice(i * 2, i * 2 + 2), 16) ^ XOR_KEY[i];
+            if (raw < 0 || raw >= TEAMS.length) return null;
+            indices.push(raw);
+        }
+        const unique = new Set(indices);
+        if (unique.size !== 6) return null;
+        return indices;
+    }
+
     const canvas = document.getElementById('wheel-canvas');
     const ctx = canvas.getContext('2d');
     const spinBtn = document.getElementById('spin-btn');
@@ -52,6 +81,7 @@
     const confirmBtn = document.getElementById('confirm-btn');
     const playAgainBtn = document.getElementById('play-again-btn');
     const rosterProgress = document.getElementById('roster-progress');
+    const copyLinkBtn = document.getElementById('copy-link-btn');
 
     const DPR = window.devicePixelRatio || 1;
     const CANVAS_SIZE = 500;
@@ -62,6 +92,9 @@
     let spinning = false;
     let selectedPosition = null;
     let landedTeamIndex = null;
+    let teamOrder = [];
+    let seededOrder = null;
+    let spinCount = 0;
 
     function init() {
         canvas.width = CANVAS_SIZE * DPR;
@@ -74,6 +107,14 @@
         spinning = false;
         selectedPosition = null;
         landedTeamIndex = null;
+        teamOrder = [];
+        spinCount = 0;
+
+        const hash = window.location.hash.replace('#', '').toLowerCase();
+        seededOrder = decodeHash(hash);
+        if (seededOrder) {
+            history.replaceState(null, '', window.location.pathname);
+        }
 
         document.querySelectorAll('.roster-slot').forEach(slot => {
             slot.classList.remove('filled');
@@ -132,7 +173,6 @@
             ctx.lineWidth = 1.5;
             ctx.stroke();
 
-            // abbreviation text
             const midAngle = startAngle + sliceAngle / 2;
             const textR = r * 0.72;
             const tx = cx + Math.cos(midAngle) * textR;
@@ -149,7 +189,6 @@
             ctx.restore();
         });
 
-        // center circle
         ctx.beginPath();
         ctx.arc(cx, cy, 28, 0, 2 * Math.PI);
         ctx.fillStyle = '#fff';
@@ -166,11 +205,16 @@
     }
 
     function getTeamAtPointer() {
-        // pointer is at the top (12 o'clock = -π/2)
         const sliceAngle = (2 * Math.PI) / TEAMS.length;
         let pointerAngle = (-Math.PI / 2 - currentAngle) % (2 * Math.PI);
         if (pointerAngle < 0) pointerAngle += 2 * Math.PI;
         return Math.floor(pointerAngle / sliceAngle) % TEAMS.length;
+    }
+
+    function angleForTeam(teamIdx) {
+        const sliceAngle = (2 * Math.PI) / TEAMS.length;
+        const sliceMid = teamIdx * sliceAngle + sliceAngle / 2;
+        return -Math.PI / 2 - sliceMid;
     }
 
     function findValidLandingAngle(rawFinalAngle) {
@@ -183,14 +227,11 @@
 
         if (!usedTeams.has(idx)) return rawFinalAngle;
 
-        // search for nearest valid team
         for (let offset = 1; offset < TEAMS.length; offset++) {
             for (const dir of [1, -1]) {
                 const candidate = (idx + offset * dir + TEAMS.length) % TEAMS.length;
                 if (!usedTeams.has(candidate)) {
-                    const sliceMid = candidate * sliceAngle + sliceAngle / 2;
-                    const targetPointerAngle = sliceMid;
-                    const needed = -Math.PI / 2 - targetPointerAngle;
+                    const needed = angleForTeam(candidate);
                     const fullRotations = Math.floor(rawFinalAngle / (2 * Math.PI)) * (2 * Math.PI);
                     let adjusted = fullRotations + needed;
                     while (adjusted < rawFinalAngle - Math.PI) adjusted += 2 * Math.PI;
@@ -213,7 +254,15 @@
         const extraAngle = Math.random() * 2 * Math.PI;
         let targetAngle = currentAngle + baseSpins * 2 * Math.PI + extraAngle;
 
-        targetAngle = findValidLandingAngle(targetAngle);
+        if (seededOrder && spinCount < seededOrder.length) {
+            const targetTeam = seededOrder[spinCount];
+            const needed = angleForTeam(targetTeam);
+            const fullRotations = Math.floor(targetAngle / (2 * Math.PI)) * (2 * Math.PI);
+            targetAngle = fullRotations + needed;
+            while (targetAngle < currentAngle + 4 * 2 * Math.PI) targetAngle += 2 * Math.PI;
+        } else {
+            targetAngle = findValidLandingAngle(targetAngle);
+        }
 
         const startAngle = currentAngle;
         const totalDelta = targetAngle - startAngle;
@@ -303,6 +352,8 @@
         };
 
         usedTeams.add(landedTeamIndex);
+        if (!seededOrder) teamOrder.push(landedTeamIndex);
+        spinCount++;
 
         const slot = document.querySelector(`.roster-slot[data-position="${selectedPosition}"]`);
         slot.classList.add('filled');
@@ -327,6 +378,33 @@
     function updateProgress() {
         const count = Object.keys(filledPositions).length;
         rosterProgress.textContent = `${count} / ${POSITIONS.length} positions filled`;
+    }
+
+    function buildResultsText() {
+        const lines = [];
+        POSITIONS.forEach(pos => {
+            const entry = filledPositions[pos];
+            if (!entry) return;
+            const label = pos === 'Defense' ? 'DEF' : pos === 'Coach' ? 'HC' : pos;
+            lines.push(`${label}: ${entry.name} (${entry.teamAbbr})`);
+        });
+        return lines.join('\n');
+    }
+
+    function buildShareUrl() {
+        const order = seededOrder || teamOrder;
+        const hash = encodeHash(order);
+        return window.location.origin + window.location.pathname + '#' + hash;
+    }
+
+    function flashCopied(btn) {
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = original;
+            btn.classList.remove('copied');
+        }, 1500);
     }
 
     function showResults() {
@@ -362,7 +440,14 @@
         if (e.key === 'Enter') confirmPick();
     });
 
-    playAgainBtn.addEventListener('click', init);
+    playAgainBtn.addEventListener('click', () => {
+        seededOrder = null;
+        init();
+    });
+
+    copyLinkBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(buildShareUrl()).then(() => flashCopied(copyLinkBtn));
+    });
 
     init();
 })();
