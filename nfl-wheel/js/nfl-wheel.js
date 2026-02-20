@@ -132,7 +132,7 @@
         spinBtn.disabled = false;
         pickModal.classList.remove('active');
         resultsOverlay.classList.remove('active');
-        makeLinkBtn.style.display = seededOrder ? 'none' : '';
+        makeLinkBtn.disabled = !!seededOrder;
     }
 
     function luminance(hex) {
@@ -251,7 +251,7 @@
 
         spinning = true;
         spinBtn.disabled = true;
-        makeLinkBtn.style.display = 'none';
+        makeLinkBtn.disabled = true;
 
         const baseSpins = 4 + Math.random() * 3;
         const extraAngle = Math.random() * 2 * Math.PI;
@@ -419,7 +419,7 @@
         const hash = encodeHash(order);
         const url = window.location.origin + window.location.pathname + '#' + hash;
         copyToClipboard(url).then(() => flashCopied(makeLinkBtn));
-        makeLinkBtn.style.display = 'none';
+        makeLinkBtn.disabled = true;
     }
 
     async function copyToClipboard(text) {
