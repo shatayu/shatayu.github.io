@@ -82,6 +82,7 @@
     const playAgainBtn = document.getElementById('play-again-btn');
     const rosterProgress = document.getElementById('roster-progress');
     const copyLinkBtn = document.getElementById('copy-link-btn');
+    const makeLinkBtn = document.getElementById('make-link-btn');
 
     const DPR = window.devicePixelRatio || 1;
     const CANVAS_SIZE = 500;
@@ -131,6 +132,7 @@
         spinBtn.disabled = false;
         pickModal.classList.remove('active');
         resultsOverlay.classList.remove('active');
+        makeLinkBtn.style.display = seededOrder ? 'none' : '';
     }
 
     function luminance(hex) {
@@ -249,6 +251,7 @@
 
         spinning = true;
         spinBtn.disabled = true;
+        makeLinkBtn.style.display = 'none';
 
         const baseSpins = 4 + Math.random() * 3;
         const extraAngle = Math.random() * 2 * Math.PI;
@@ -401,6 +404,24 @@
         return window.location.origin + window.location.pathname + '#' + hash;
     }
 
+    function generateRandomTeams() {
+        const indices = Array.from({ length: TEAMS.length }, (_, i) => i);
+        for (let i = indices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
+        return indices.slice(0, 6);
+    }
+
+    function makeLink() {
+        const order = generateRandomTeams();
+        seededOrder = order;
+        const hash = encodeHash(order);
+        const url = window.location.origin + window.location.pathname + '#' + hash;
+        copyToClipboard(url).then(() => flashCopied(makeLinkBtn));
+        makeLinkBtn.style.display = 'none';
+    }
+
     async function copyToClipboard(text) {
         try {
             await navigator.clipboard.writeText(text);
@@ -461,6 +482,7 @@
         resultsOverlay.classList.add('active');
     }
 
+    makeLinkBtn.addEventListener('click', makeLink);
     spinBtn.addEventListener('click', spin);
 
     confirmBtn.addEventListener('click', () => confirmPick());
