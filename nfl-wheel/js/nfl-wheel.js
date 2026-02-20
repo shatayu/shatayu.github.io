@@ -401,20 +401,29 @@
         return window.location.origin + window.location.pathname + '#' + hash;
     }
 
-    function copyToClipboard(text) {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            return navigator.clipboard.writeText(text);
-        }
+    async function copyToClipboard(text) {
+        try {
+            await navigator.clipboard.writeText(text);
+            return;
+        } catch (_) { /* fall through to textarea fallback */ }
+
         const ta = document.createElement('textarea');
         ta.value = text;
+        ta.setAttribute('readonly', '');
         ta.style.position = 'fixed';
-        ta.style.opacity = '0';
+        ta.style.left = '-9999px';
+        ta.style.top = '-9999px';
         document.body.appendChild(ta);
-        ta.focus();
-        ta.select();
-        document.execCommand('copy');
+
+        const range = document.createRange();
+        range.selectNodeContents(ta);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        ta.setSelectionRange(0, 999999);
+
+        try { document.execCommand('copy'); } catch (_) { /* ignore */ }
         document.body.removeChild(ta);
-        return Promise.resolve();
     }
 
     function flashCopied(btn) {
