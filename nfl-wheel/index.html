@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Wheel - Shatayu Kulkarni</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../images/Logo.png"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="../css/index.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/nfl-wheel.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="header-nav">
+            <a href="../" class="back-link">← Back to Main</a>
+            <h1>NFL Wheel</h1>
+        </div>
+
+        <div class="game-area">
+            <div class="wheel-section">
+                <div class="wheel-wrapper">
+                    <div class="pointer"></div>
+                    <canvas id="wheel-canvas" width="500" height="500"></canvas>
+                </div>
+                <button id="spin-btn" class="spin-button">Spin the Wheel</button>
+            </div>
+
+            <div class="roster-section">
+                <h2>Your Roster</h2>
+                <div id="roster-card" class="roster-card">
+                    <div class="roster-slot" data-position="QB">
+                        <span class="position-label">QB</span>
+                        <span class="player-name">—</span>
+                        <span class="team-badge"></span>
+                    </div>
+                    <div class="roster-slot" data-position="RB">
+                        <span class="position-label">RB</span>
+                        <span class="player-name">—</span>
+                        <span class="team-badge"></span>
+                    </div>
+                    <div class="roster-slot" data-position="WR">
+                        <span class="position-label">WR</span>
+                        <span class="player-name">—</span>
+                        <span class="team-badge"></span>
+                    </div>
+                    <div class="roster-slot" data-position="TE">
+                        <span class="position-label">TE</span>
+                        <span class="player-name">—</span>
+                        <span class="team-badge"></span>
+                    </div>
+                    <div class="roster-slot" data-position="Defense">
+                        <span class="position-label">DEF</span>
+                        <span class="player-name">—</span>
+                        <span class="team-badge"></span>
+                    </div>
+                    <div class="roster-slot" data-position="Coach">
+                        <span class="position-label">HC</span>
+                        <span class="player-name">—</span>
+                        <span class="team-badge"></span>
+                    </div>
+                </div>
+                <div id="roster-progress" class="roster-progress">0 / 6 positions filled</div>
+            </div>
+        </div>
+
+        <div id="pick-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div id="modal-team-banner" class="modal-team-banner">
+                    <span id="modal-team-name" class="modal-team-name"></span>
+                </div>
+                <h3>Pick a position</h3>
+                <div id="position-buttons" class="position-buttons"></div>
+                <div id="name-entry" class="name-entry" style="display:none;">
+                    <label id="name-label" class="name-label"></label>
+                    <input type="text" id="player-input" class="player-input" placeholder="Enter a name..." autocomplete="off" />
+                    <button id="confirm-btn" class="confirm-button">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="results-overlay" class="modal-overlay">
+            <div class="modal-content results-content">
+                <h2>Your Roster is Complete!</h2>
+                <div id="results-roster" class="results-roster"></div>
+                <button id="play-again-btn" class="spin-button">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/nfl-wheel.js"></script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+/* Header navigation (matches ranker) */
+.header-nav {
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.back-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.header-nav h1 {
+    margin: 0;
+    font-size: 2em;
+    font-weight: 500;
+}
+
+/* Game layout */
+.game-area {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.wheel-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+.wheel-wrapper {
+    position: relative;
+    width: 500px;
+    height: 500px;
+}
+
+#wheel-canvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+
+.pointer {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-top: 30px solid #333;
+    z-index: 10;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.spin-button {
+    padding: 14px 36px;
+    background: #666;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-family: 'Roboto Slab', serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.5px;
+}
+
+.spin-button:hover:not(:disabled) {
+    background: #555;
+    transform: translateY(-1px);
+}
+
+.spin-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Roster section */
+.roster-section {
+    flex: 1;
+    min-width: 260px;
+    max-width: 340px;
+}
+
+.roster-section h2 {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 20px;
+}
+
+.roster-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.roster-slot {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    background: white;
+    border: 2px solid #f0f0f0;
+    border-radius: 8px;
+    border-left: 5px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.roster-slot.filled {
+    border-color: #e0e0e0;
+}
+
+.position-label {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #999;
+    min-width: 40px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.roster-slot.filled .position-label {
+    color: #fff;
+    background: var(--team-color, #666);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    min-width: auto;
+}
+
+.player-name {
+    flex: 1;
+    font-size: 1rem;
+    color: #bbb;
+    margin-left: 12px;
+}
+
+.roster-slot.filled .player-name {
+    color: #333;
+    font-weight: 500;
+}
+
+.team-badge {
+    font-size: 0.8rem;
+    color: #999;
+    margin-left: 8px;
+    white-space: nowrap;
+}
+
+.roster-progress {
+    text-align: center;
+    color: #999;
+    font-size: 0.9rem;
+    margin-top: 16px;
+}
+
+/* Modal overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 0;
+    max-width: 440px;
+    width: 90%;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content h3 {
+    text-align: center;
+    font-weight: 500;
+    font-size: 1.2rem;
+    color: #333;
+    margin: 20px 0 16px;
+}
+
+.modal-team-banner {
+    padding: 24px 20px;
+    text-align: center;
+    color: white;
+    position: relative;
+}
+
+.modal-team-name {
+    font-size: 1.5rem;
+    font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Position selection buttons */
+.position-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    padding: 0 24px 20px;
+}
+
+.pos-btn {
+    padding: 10px 20px;
+    background: white;
+    color: #333;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Roboto Slab', serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 80px;
+}
+
+.pos-btn:hover {
+    border-color: #666;
+    background: #f8f8f8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pos-btn.selected {
+    background: #666;
+    color: white;
+    border-color: #666;
+}
+
+/* Name entry */
+.name-entry {
+    padding: 0 24px 24px;
+    text-align: center;
+}
+
+.name-label {
+    display: block;
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.player-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Roboto Slab', serif;
+    color: #333;
+    box-sizing: border-box;
+    margin-bottom: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.player-input:focus {
+    outline: none;
+    border-color: #666;
+}
+
+.confirm-button {
+    padding: 12px 32px;
+    background: #666;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Roboto Slab', serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.confirm-button:hover:not(:disabled) {
+    background: #555;
+}
+
+.confirm-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Results overlay */
+.results-content {
+    padding: 32px 24px;
+    max-width: 480px;
+}
+
+.results-content h2 {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: #000;
+    margin: 0 0 24px;
+}
+
+.results-roster {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.results-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border-left: 5px solid #666;
+    background: #fafafa;
+}
+
+.results-row .position-label {
+    color: #fff;
+    background: var(--team-color, #666);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    min-width: auto;
+    font-weight: 500;
+}
+
+.results-row .player-name {
+    color: #333;
+    font-weight: 500;
+    flex: 1;
+    margin-left: 12px;
+}
+
+.results-row .team-badge {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.results-content .spin-button {
+    display: block;
+    margin: 0 auto;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .game-area {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .wheel-wrapper {
+        width: 380px;
+        height: 380px;
+    }
+
+    .roster-section {
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+@media (max-width: 500px) {
+    .header-nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .wheel-wrapper {
+        width: 300px;
+        height: 300px;
+    }
+
+    .spin-button {
+        font-size: 16px;
+        padding: 12px 28px;
+    }
+
+    .modal-content {
+        width: 95%;
+    }
+
+    .modal-team-name {
+        font-size: 1.2rem;
+    }
+
+    .pos-btn {
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        min-width: 60px;
+    }
+}
