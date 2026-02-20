@@ -183,12 +183,13 @@
     justify-content: center;
     align-items: center;
     animation: fadeIn 0.3s ease;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px 0;
 }
 
 .modal-overlay.active {
     display: flex;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 @keyframes fadeIn {
@@ -202,7 +203,6 @@
     padding: 0;
     max-width: 440px;
     width: 90%;
-    overflow: hidden;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.3s ease;
     margin: auto;
@@ -227,6 +227,7 @@
     text-align: center;
     color: white;
     position: relative;
+    border-radius: 16px 16px 0 0;
 }
 
 .modal-team-name {
@@ -458,14 +459,6 @@
         padding: 8px 14px;
         font-size: 0.9rem;
         min-width: 60px;
-    }
-
-    .modal-overlay {
-        padding: 20px 0;
-    }
-
-    .modal-content {
-        margin: auto;
     }
 
     .results-actions {
