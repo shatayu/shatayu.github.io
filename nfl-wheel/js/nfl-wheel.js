@@ -36,34 +36,34 @@
         { name: 'Washington Commanders', abbr: 'WSH', color1: '#5A1414', color2: '#FFB612' },
     ];
 
-    const POSITIONS = ['QB', 'RB', 'WR', 'TE', 'Defense', 'Coach'];
+    const POSITIONS = ['QB', 'RB', 'WR1', 'WR2', 'TE', 'Defense', 'Coach'];
 
-    const XOR_KEY = [0xA3, 0x7F, 0x1B, 0xE5, 0x42, 0xD9];
-    const SHUFFLE = [4, 11, 2, 9, 0, 7, 6, 1, 10, 3, 8, 5];
-    const UNSHUFFLE = new Array(12);
+    const XOR_KEY = [0xA3, 0x7F, 0x1B, 0xE5, 0x42, 0xD9, 0x6C];
+    const SHUFFLE = [4, 11, 2, 9, 0, 7, 13, 6, 1, 10, 3, 12, 8, 5];
+    const UNSHUFFLE = new Array(14);
     SHUFFLE.forEach((dest, src) => { UNSHUFFLE[dest] = src; });
 
     function encodeHash(teamIndices) {
         const xored = teamIndices.map((idx, i) => (idx ^ XOR_KEY[i]) & 0xFF);
         const hex = xored.map(b => b.toString(16).padStart(2, '0')).join('');
-        const shuffled = new Array(12);
-        for (let i = 0; i < 12; i++) shuffled[SHUFFLE[i]] = hex[i];
+        const shuffled = new Array(14);
+        for (let i = 0; i < 14; i++) shuffled[SHUFFLE[i]] = hex[i];
         return shuffled.join('');
     }
 
     function decodeHash(hash) {
-        if (!/^[0-9a-f]{12}$/.test(hash)) return null;
-        const unshuffled = new Array(12);
-        for (let i = 0; i < 12; i++) unshuffled[UNSHUFFLE[i]] = hash[i];
+        if (!/^[0-9a-f]{14}$/.test(hash)) return null;
+        const unshuffled = new Array(14);
+        for (let i = 0; i < 14; i++) unshuffled[UNSHUFFLE[i]] = hash[i];
         const hex = unshuffled.join('');
         const indices = [];
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 7; i++) {
             const raw = parseInt(hex.slice(i * 2, i * 2 + 2), 16) ^ XOR_KEY[i];
             if (raw < 0 || raw >= TEAMS.length) return null;
             indices.push(raw);
         }
         const unique = new Set(indices);
-        if (unique.size !== 6) return null;
+        if (unique.size !== 7) return null;
         return indices;
     }
 
@@ -372,7 +372,9 @@
         updateProgress();
 
         if (window.innerWidth <= 900) {
-            document.querySelector('.wheel-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setTimeout(() => {
+                document.querySelector('.wheel-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 150);
         }
 
         if (Object.keys(filledPositions).length >= POSITIONS.length) {
@@ -410,7 +412,7 @@
             const j = Math.floor(Math.random() * (i + 1));
             [indices[i], indices[j]] = [indices[j], indices[i]];
         }
-        return indices.slice(0, 6);
+        return indices.slice(0, 7);
     }
 
     function makeLink() {
